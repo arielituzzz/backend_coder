@@ -1,4 +1,4 @@
-const saludo = "Hola Mundo!, este es mi primer script para backend desde NodeJS!";
+const saludo = "Hola Mundo!, este es mi primer script para backend desde NodeJs!";
 
 
 console.log(saludo);
