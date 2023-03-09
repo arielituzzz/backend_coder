@@ -69,8 +69,3 @@ console.log(fruits.getProducts());
 console.log(fruits.getProductById(2));
 
 console.log(fruits.getProductById(4));
-
-
-
-
-
