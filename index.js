@@ -1,6 +1,6 @@
 class ProductManager {
 
-	#autoId = 0;
+	#autoId = 1;
 
 	constructor() {
 		this.products = [];
@@ -10,7 +10,6 @@ class ProductManager {
 		
 		if(title, description, price, thumbnail, stock, code) {
 			
-			this.#autoId++
 
 			const duplicateCode = this.products.some(product => product.code === code)
 			
@@ -27,6 +26,11 @@ class ProductManager {
 						}
 
 			this.products.push(product);
+
+			this.#autoId++
+
+			return "Saved product";
+
 			}else{
 				return `Code "${code}" duplicate`;
 			};
