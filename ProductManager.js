@@ -12,13 +12,13 @@ class ProductManager {
 
 	// Cargo la info del archivo Usuarios.json en el array de productos
 	async loadData() {
-		this.#products = await this.getProducts();
-	};
 
+		this.#products = await this.getProducts();
+
+	};
 
 	// Agrego un producto
 	async addProduct({title, description, price, thumbnail, code, stock}) {
-
 
 		const duplicateCode = this.#products.some(product => product.code === code);
 
@@ -35,9 +35,18 @@ class ProductManager {
 				stock
 
 			});
-			await fs.writeFile(this.path, JSON.stringify(this.#products)); 
 
-			return `The ${title} product was successfully added`;
+			try
+			{
+				await fs.writeFile(this.path, JSON.stringify(this.#products)); 
+
+				return `The ${title} product was successfully added`;
+			}
+			catch(err)
+			{
+				return err;
+			}
+
 		}
 
 		return "Incorrectly entered data";
@@ -75,12 +84,28 @@ class ProductManager {
 	};
 
 	// Actualizo un producto buscandolo por su ID
-	async updateProducts(id, data) {
+	async updateProduct(id, data) {
 
-		const foundProduct = this.#products.find(product => product.id === id);
+		let index = this.#products.findIndex(product => product.id === id);
 
+		if(index) {
 
+			this.#products[index] = {id, ...data};
 
+			try
+			{
+
+				await fs.writeFile(this.path, JSON.stringify(this.#products));
+
+				return this.#products[index];
+			}
+			catch(err)
+			{
+				return err;
+			}
+		}
+
+		return "Incorrectly entered data";
 
 	};
 
@@ -95,12 +120,17 @@ class ProductManager {
 			const newProductsList = this.#products.filter(products => products.id !== id);
 
 			this.#products = newProductsList;
+			try
+			{
+				await fs.writeFile(this.path, JSON.stringify(this.#products));
 
-			await fs.writeFile(this.path, JSON.stringify(this.#products));
-
-			return `${foundProduct.title} product with ID ${foundProduct.id} was successfully deleted`
+				return `${foundProduct.title} product with ID ${foundProduct.id} was successfully deleted`
+			}
+			catch(err)
+			{
+				return err;
+			}
 		}
-
 		return `The product with ID ${id} was not found in the database and cannot be deleted`
 	};
 
@@ -160,14 +190,26 @@ const manager = async () => {
 		code: "abc555",
 	};
 
-	console.log(await productManager.addProduct(product1));
-	console.log(await productManager.addProduct(product2));
-	console.log(await productManager.addProduct(product3));
-	console.log(await productManager.addProduct(product4));
-	console.log(await productManager.addProduct(product5));
-	console.log(await productManager.getProductById(2));
-	console.log(await productManager.getProductById(35));
-	//	console.log(await productManager.deleteProduct(3));
+	const product6 = {
+		title: "PasionFruit",
+		description: "Orange",
+		price: 600,
+		thumbnail: "image6",
+		code: "abc666",
+		stock: 60
+	};
+
+
+	//	console.log(await productManager.addProduct(product1));
+	//	console.log(await productManager.addProduct(product2));
+	//	console.log(await productManager.addProduct(product3));
+	//	console.log(await productManager.addProduct(product4));
+	//	console.log(await productManager.addProduct(product5));
+	//	console.log(await productManager.addProduct(product6));
+	//	console.log(await productManager.getProductById(2));
+	//	console.log(await productManager.getProductById(35));
+	//	console.log(await productManager.deleteProduct(2));
+	//	console.log(await productManager.updateProduct(2, product6));
 
 
 	const products = await productManager.getProducts();
