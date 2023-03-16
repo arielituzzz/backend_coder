@@ -8,7 +8,7 @@ class ProductManager {
 
 	addProduct(title, description, price, thumbnail, stock, code) {
 		
-		if(title, description, price, thumbnail, stock, code) {
+		if(title && description && price && thumbnail && stock && code) {
 			
 
 			const duplicateCode = this.products.some(product => product.code === code)
