@@ -2,23 +2,43 @@ const fs = require("fs").promises;
 
 class ProductManager {
 
-	#autoId = 1;
-	#products = [];
+	#autoId;
+	#products;
 
 	constructor() {
 		this.path = "./Products.json"
 		this.encoding = {encoding: "utf-8"}
+		this.#autoId = 0
+		this.#products = []
 	}
 
-	// Cargo la info del archivo Usuarios.json en el array de productos
+	// Cargo la info del archivo Products.json en el array de productos y actualizo el ultimo ID generado para no pisar los nuevos que se creen.
 	async loadData() {
 
 		this.#products = await this.getProducts();
 
+		if(this.#products.length > 0){
+			return this.#autoId = this.#products.at(-1).id;
+		};
+
 	};
+
+	// Metodo reutilizable para la escritura del archivo Products.json .
+	async fsWrite (array) {
+
+		try{	
+			await fs.writeFile(this.path, JSON.stringify(array)); 
+		}
+		catch(err){
+			return err;
+		}
+	};
+
 
 	// Agrego un producto
 	async addProduct({title, description, price, thumbnail, code, stock}) {
+	 	
+		await this.loadData();
 
 		const duplicateCode = this.#products.some(product => product.code === code);
 
@@ -26,7 +46,7 @@ class ProductManager {
 
 
 			this.#products.push({
-				id: this.#autoId++,
+				id: ++this.#autoId,
 				title,
 				description,
 				price,
@@ -38,7 +58,7 @@ class ProductManager {
 
 			try
 			{
-				await fs.writeFile(this.path, JSON.stringify(this.#products)); 
+				await this.fsWrite(this.#products); 
 
 				return `The ${title} product was successfully added`;
 			}
@@ -49,7 +69,7 @@ class ProductManager {
 
 		}
 
-		return "Incorrectly entered data";
+		return "Incorrectly entered data (addProduct)";
 
 
 	};
@@ -60,18 +80,20 @@ class ProductManager {
 	async getProducts() {
 		try
 		{
-			const products = await fs.readFile(this.path,this.encoding);
-			return JSON.parse(products);
+			return JSON.parse(await fs.readFile(this.path,this.encoding));
 		}
 		catch (err)
 		{
-			await fs.writeFile(this.path, '[]');
+				await this.fsWrite([]); 
+			
 			return [];
 		}
 	};
 
 	// Busco un producto por su ID
 	async getProductById(id) {
+
+		await this.loadData();
 
 		const foundProduct = this.#products.find(product => product.id === id );
 
@@ -83,47 +105,61 @@ class ProductManager {
 
 	};
 
-	// Actualizo un producto buscandolo por su ID
+	// Busco un producto por su ID y lo actualizo con la nueva DATA
 	async updateProduct(id, data) {
 
-		let index = this.#products.findIndex(product => product.id === id);
+		await this.loadData();
 
-		if(index) {
+		const index = this.#products.findIndex(product => product.id === id);
 
-			this.#products[index] = {id, ...data};
+		const duplicateCode = this.#products.some(product => product.code === data.code);
+
+		if(index >= 0 && !duplicateCode) {
+
+			 this.#products[index] = {id, ...data};
 
 			try
 			{
-
-				await fs.writeFile(this.path, JSON.stringify(this.#products));
-
+				
+				await this.fsWrite(this.#products); 
+				
 				return this.#products[index];
 			}
 			catch(err)
 			{
 				return err;
 			}
+		}else if(index < 0) {
+
+			return `The product with ID ${id} was not found in the database`;
+
+		}else if(duplicateCode) {
+
+			return `The product with code ${data.code} has already been created`;
+
 		}
 
-		return "Incorrectly entered data";
+		// return "Incorrectly entered data (updateProducts)";
 
 	};
 
 	// Borro un producto del archivo "Products.json"
 	async deleteProduct(id) {
 
+		await this.loadData();
 
 		const foundProduct = this.#products.find(product => product.id === id );
 
 		if(foundProduct) {
 
-			const newProductsList = this.#products.filter(products => products.id !== id);
+			this.#products = this.#products.filter(products => products.id !== id);
 
-			this.#products = newProductsList;
+			
 			try
 			{
-				await fs.writeFile(this.path, JSON.stringify(this.#products));
 
+				await this.fsWrite(this.#products); 
+				
 				return `${foundProduct.title} product with ID ${foundProduct.id} was successfully deleted`
 			}
 			catch(err)
@@ -140,8 +176,6 @@ class ProductManager {
 const manager = async () => {
 
 	const productManager = new ProductManager();
-
-	await productManager.loadData();
 
 	const product1 = {
 		title: "Pearl",
@@ -176,7 +210,7 @@ const manager = async () => {
 		title: "Melon",
 		description: "Amber",
 		price: 400,
-		thumbnail: "image4",
+		ithumbnail: "image4",
 		code: "abc111",
 		stock: 40
 	};
@@ -199,6 +233,14 @@ const manager = async () => {
 		stock: 60
 	};
 
+	const product7 = {
+		title: "WaterMelon",
+		description: "Pink",
+		price: 700,
+		thumbnail: "image7",
+		code: "abc777",
+		stock: 70
+	};
 
 	//	console.log(await productManager.addProduct(product1));
 	//	console.log(await productManager.addProduct(product2));
@@ -206,10 +248,11 @@ const manager = async () => {
 	//	console.log(await productManager.addProduct(product4));
 	//	console.log(await productManager.addProduct(product5));
 	//	console.log(await productManager.addProduct(product6));
+	//	console.log(await productManager.addProduct(product7));
 	//	console.log(await productManager.getProductById(2));
 	//	console.log(await productManager.getProductById(35));
-	//	console.log(await productManager.deleteProduct(2));
-	//	console.log(await productManager.updateProduct(2, product6));
+	// 	console.log(await productManager.deleteProduct(2));
+	//	console.log(await productManager.updateProduct(1, product7));
 
 
 	const products = await productManager.getProducts();
