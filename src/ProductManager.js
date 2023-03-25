@@ -1,5 +1,4 @@
-import fileSystem from "fs";
-const fs = fileSystem.promises
+import fs from "fs/promises";
 
 class ProductManager {
 
@@ -7,7 +6,7 @@ class ProductManager {
 	#products;
 
 	constructor() {
-		this.path = "./Products.json"
+		this.path = "./src/Products.json"
 		this.encoding = {encoding: "utf-8"}
 		this.#autoId = 0
 		this.#products = []
