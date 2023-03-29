@@ -10,44 +10,61 @@ app.use(express.urlencoded({ extended: true }));
 const productManager = new ProductManager();
 
 app.get("/products", async (req, res) => {
-	
+
 	//Opcion para pedir limite de busqueda de los primeros objetos.
-	const limitStart = req.query.limitStart
+	const limitStart = parseInt(req.query.limitStart);
 
 	//Opcion para pedir limite de busqueda de los ultimos objetos.
-	const limitEnd = req.query.limitEnd
+	const limitEnd = parseInt(req.query.limitEnd);
 
-	const products = await productManager.getProducts();
-	
-	if(limitStart > 0 && limitStart <= products.length) {
-		
-		const firstProducts = products.splice(0, limitStart);
+	try{
 
-		res.send(firstProducts);
+		// Traigo los productos del archivo Products.json
+		const products = await productManager.getProducts();
 
-		return;
+		if(limitStart > 0 && limitStart <= products.length) {
+
+			const firstProducts = products.splice(0, limitStart);
+
+			res.send(firstProducts);
+
+			return;
+
+		};
+
+		if(limitEnd > 0 && limitEnd <= products.length) {
+
+			const lastProducts = products.splice(-limitEnd);
+
+			res.send(lastProducts);
+
+			return;
+		};
+
+		res.send(products);
+	}
+	catch(err) {
+
+		res.send(err);
 
 	};
-	
-	if(limitEnd > 0 && limitEnd <= products.length) {
-		
-		const lastProducts = products.splice(-limitEnd);
-
-		res.send(lastProducts);
-		
-		return;
-	};
-
-	res.send(products);
 
 
 });
 
 app.get("/products/:pid", async (req, res) => {
 
-	const product = await productManager.getProductById(req.params.pid);
+	try{
 
-	res.send(product);
+		const product = await productManager.getProductById(parseInt(req.params.pid));
+
+		res.send(product);
+	}
+	catch(err) {
+
+		res.send(err);
+
+	};
 
 });
 

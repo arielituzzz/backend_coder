@@ -95,7 +95,7 @@ class ProductManager {
 
 		await this.loadData();
 
-		const foundProduct = this.#products.find(product => product.id == id );
+		const foundProduct = this.#products.find(product => product.id === id );
 
 		if(foundProduct) {
 			return foundProduct;
@@ -110,7 +110,7 @@ class ProductManager {
 
 		await this.loadData();
 
-		const index = this.#products.findIndex(product => product.id == id);
+		const index = this.#products.findIndex(product => product.id === id);
 
 		const duplicateCode = this.#products.some(product => product.code === data.code);
 
@@ -148,11 +148,11 @@ class ProductManager {
 
 		await this.loadData();
 
-		const foundProduct = this.#products.find(product => product.id == id );
+		const foundProduct = this.#products.find(product => product.id === id );
 
 		if(foundProduct) {
 
-			this.#products = this.#products.filter(products => products.id != id);
+			this.#products = this.#products.filter(products => products.id !== id);
 
 
 			try
