@@ -1,10 +1,10 @@
 {
   "name": "backend_coder",
   "version": "1.0.0",
-  "description": "Desafio 3",
-  "main": "app.js",
+  "description": "Primera Entrega",
+  "main": "src/server.js",
   "scripts": {
-    "start": "nodemon src/app.js"
+    "start": "nodemon"
   },
   "author": "Ariel Suarez",
   "license": "ISC",

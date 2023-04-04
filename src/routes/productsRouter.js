@@ -1,10 +1,11 @@
 import {Router} from "express";
-import ProductManager from "../utils/ProductManager.js"
+import ProductManager from "../models/ProductManager.js"
 
 const productsRouter = Router();
 
 const productManager = new ProductManager();
 
+//ENLISTO TODOS LOS PRODUCTOS CON OPCION DE PEDIR LOS PRIMEROS O LOS ULTIMOS
 productsRouter.get("/", async (req, res) => {
 
 	//Opcion para pedir limite de busqueda de los primeros objetos.
@@ -22,7 +23,7 @@ productsRouter.get("/", async (req, res) => {
 
 			const firstProducts = products.splice(0, limitStart);
 
-			res.send(firstProducts);
+			res.status(302).send(firstProducts);
 
 			return;
 
@@ -32,33 +33,87 @@ productsRouter.get("/", async (req, res) => {
 
 			const lastProducts = products.splice(-limitEnd);
 
-			res.send(lastProducts);
+			res.status(302).send(lastProducts);
 
 			return;
 		};
 
-		res.send(products);
+		res.status(302).send(products);
 	}
 	catch(err) {
 
-		res.send(err);
+		res.status(404).send(err);
 
 	};
 
 
 });
 
+//BUSCO UN PRODUCTO POR SU RESPECTIVO ID
 productsRouter.get("/:pid", async (req, res) => {
 
 	try{
 
 		const product = await productManager.getProductById(parseInt(req.params.pid));
 
-		res.send(product);
+		res.status(302).send(product);
 	}
 	catch(err) {
 
-		res.send(err);
+		res.status(404).send(err);
+
+	};
+
+});
+
+//CREO UN NUEVO PRODUCTO
+productsRouter.post("/", async (req, res) => {
+
+	try{
+
+		const newProduct = req.body;
+
+		res.status(201).send(await productManager.addProduct(newProduct));
+
+	}
+	catch(err) {
+
+		res.status(400).send(err);
+	}
+
+});
+
+//ACTUALIZO PROPIEDADES DEL PRODUCTO BUSCANDOLO POR SU ID
+productsRouter.put("/:pid", async (req, res) => {
+
+	try{
+		
+		const id = Number(req.params.pid);
+		const productToUpdate = req.body;
+
+		res.status(201).send(await productManager.updateProduct(id, productToUpdate));
+		
+
+	}catch(err) {
+
+		res.status(404).send(err);
+
+	};
+
+});
+
+// ELIMINO UN PRODUCTO
+productsRouter.delete("/:pid", async (req, res) => {
+
+	try{
+
+		const id = Number(req.params.pid);
+
+		res.status(200).send(await productManager.deleteProduct(id));
+
+	}catch(err) {
+
+		res.status(404).send(err);
 
 	};
 
