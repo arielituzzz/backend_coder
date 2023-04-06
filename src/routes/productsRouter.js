@@ -1,4 +1,5 @@
 import {Router} from "express";
+import { uploader } from '../utils/multer.js';
 import ProductManager from "../models/ProductManager.js"
 
 const productsRouter = Router();
@@ -23,7 +24,7 @@ productsRouter.get("/", async (req, res) => {
 
 			const firstProducts = products.splice(0, limitStart);
 
-			res.status(302).send(firstProducts);
+			res.status(302).json({status: "success", resolve: firstProducts});
 
 			return;
 
@@ -33,16 +34,16 @@ productsRouter.get("/", async (req, res) => {
 
 			const lastProducts = products.splice(-limitEnd);
 
-			res.status(302).send(lastProducts);
+			res.status(302).json({status: "success", resolve: lastProducts});
 
 			return;
 		};
 
-		res.status(302).send(products);
+		res.status(302).json({status: "success", resolve: products});
 	}
 	catch(err) {
 
-		res.status(404).send(err);
+		res.status(404).json({status: "Error", message: err});
 
 	};
 
@@ -56,15 +57,39 @@ productsRouter.get("/:pid", async (req, res) => {
 
 		const product = await productManager.getProductById(parseInt(req.params.pid));
 
-		res.status(302).send(product);
+		res.status(302).json({status: "success", resolve: product});
 	}
 	catch(err) {
 
-		res.status(404).send(err);
+		res.status(404).json({status: "Error", message: err});
 
 	};
 
 });
+
+
+//SUBO IMAGENES
+productsRouter.put("/:pid/images", uploader.array("file"), async (req, res) => {
+
+	try{
+		if(req.files) {
+		const id = Number(req.params.pid);
+		const listFiles = [];
+		const files = req.files.map(img => {
+			listFiles.push(img.path);
+		});
+			const thumbnail = {thumbnail: listFiles};
+		
+		res.status(200).json({status: "success", resolve: await productManager.updateProduct(id, thumbnail)});
+		}else{
+			res.status(400).json({status: "Error", message: "Upload fail"});
+		}
+	}catch(err) {
+		res.status(400).json({status: "Error", message: err});
+	}
+
+	});
+
 
 //CREO UN NUEVO PRODUCTO
 productsRouter.post("/", async (req, res) => {
@@ -73,12 +98,16 @@ productsRouter.post("/", async (req, res) => {
 
 		const newProduct = req.body;
 
-		res.status(201).send(await productManager.addProduct(newProduct));
+		if(newProduct.thumbnail === undefined) {
+			newProduct.thumbnail = null;
+		}
+
+		res.status(201).json({status: "success", resolve: await productManager.addProduct(newProduct)});
 
 	}
 	catch(err) {
 
-		res.status(400).send(err);
+		res.status(400).json({status: "Error", message: err});
 	}
 
 });
@@ -87,16 +116,16 @@ productsRouter.post("/", async (req, res) => {
 productsRouter.put("/:pid", async (req, res) => {
 
 	try{
-		
+
 		const id = Number(req.params.pid);
 		const productToUpdate = req.body;
 
-		res.status(201).send(await productManager.updateProduct(id, productToUpdate));
-		
+		res.status(201).json({status: "success", resolve: await productManager.updateProduct(id, productToUpdate)});
+
 
 	}catch(err) {
 
-		res.status(404).send(err);
+		res.status(404).json({status: "Error", message: err});
 
 	};
 
@@ -109,11 +138,11 @@ productsRouter.delete("/:pid", async (req, res) => {
 
 		const id = Number(req.params.pid);
 
-		res.status(200).send(await productManager.deleteProduct(id));
+		res.status(200).json({status: "success", resolve: await productManager.deleteProduct(id)});
 
 	}catch(err) {
 
-		res.status(404).send(err);
+		res.status(404).json({status: "Error", message: err});
 
 	};
 

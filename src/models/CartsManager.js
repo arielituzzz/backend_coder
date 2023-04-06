@@ -62,13 +62,11 @@ class CartsManager {
 			};
 
 			this.#carts.push(newCart);
-			
+
 			// Le doy permanencia a los cambios realizados
 			await this.fsWrite(this.cartsPath, this.#carts); 
 
-			return `The cart:
-				${JSON.stringify(newCart)}
-				was successfully added`;
+			return newCart;
 
 		}catch(err) {
 
@@ -82,55 +80,53 @@ class CartsManager {
 	async addProductToCart(cartId, productId) {
 
 
-			
-			await this.loadCartsData();
-			const indexCart = this.#carts.findIndex(cart => cart.id === cartId);	
 
-			const listProducts = await this.loadProductsData();
-			const indexProduct = listProducts.findIndex(product => product.id === productId);
+		await this.loadCartsData();
+		const indexCart = this.#carts.findIndex(cart => cart.id === cartId);	
 
-			const foundCart = this.#carts[indexCart];	
-			const foundProduct = listProducts[indexProduct];
+		const listProducts = await this.loadProductsData();
+		const indexProduct = listProducts.findIndex(product => product.id === productId);
 
-			// Si existe el carrito y existe el producto...
-			if(indexCart >= 0 && indexProduct >= 0) {
+		const foundCart = this.#carts[indexCart];	
+		const foundProduct = listProducts[indexProduct];
 
-				const newProduct = {id: foundProduct.id, quantity: 1};
-				const indexProductInCart = foundCart.products.findIndex(product => product.id === newProduct.id);
-				
-				// Si el producto no existe en el carrito lo agrego directamente y resto la cantidad al stock del producto
-				if(foundCart.products.length <= 0 || indexProductInCart < 0) {
-					foundCart.products.push(newProduct);
-					--foundProduct.stock;
+		// Si existe el carrito y existe el producto...
+		if(indexCart >= 0 && indexProduct >= 0) {
+
+			const newProduct = {id: foundProduct.id, quantity: 1};
+			const indexProductInCart = foundCart.products.findIndex(product => product.id === newProduct.id);
+
+			// Si el producto no existe en el carrito lo agrego directamente y resto la cantidad al stock del producto
+			if(foundCart.products.length <= 0 || indexProductInCart < 0) {
+				foundCart.products.push(newProduct);
+				--foundProduct.stock;
 				// Si el producto ya existe agrego solamente la cantidad y resto la misma al stock del producto
+			}else{
+				if(foundProduct.stock > 0) {
+					foundCart.products[indexProductInCart].quantity++;
+					--foundProduct.stock;
+					// Si ya no hay mas stock del producto lanzo una excepcion...
 				}else{
-					if(foundProduct.stock > 0) {
-						foundCart.products[indexProductInCart].quantity++;
-						--foundProduct.stock;
-				// Si ya no hay mas stock del producto lanzo una excepcion...
-					}else{
-						throw `Error: Amount Exceeded` ;
-					}
-
+					throw `Error: Amount Exceeded` ;
 				}
 
-		try
-		{
+			}
+
+			try
+			{
 				// Le doy permanencia a los cambios realizados
 				await this.fsWrite(this.cartsPath, this.#carts); 
 				await this.fsWrite(this.productsPath, listProducts); 
-				return `The product:
-				${JSON.stringify(newProduct)}
-				was successfully added in cart ID: ${cartId}
-				Available Stock = ${foundProduct.stock}`;
-		}catch(err) {
-			return err;
-		}
+				return {cartId: cartId, productId: newProduct.id, quantity: newProduct.quantity, stock_available: foundProduct.stock};
 
+			}catch(err) {
+				return err;
 			}
-			// Si no existe el carrito o el producto lanzo una excepcion...
-			throw "Error: No Cart o Product found";
-		
+
+		}
+		// Si no existe el carrito o el producto lanzo una excepcion...
+		throw "Error: No Cart o Product found";
+
 
 	};
 
@@ -166,7 +162,7 @@ class CartsManager {
 		}catch(err) {
 			throw err;
 		}
-		
+
 		// Si no existe lanzo una excepcion
 		throw( `The cart with ID ${id} was not found in the database`);
 
@@ -191,7 +187,7 @@ class CartsManager {
 				this.#carts[foundIndexCart].products = newProducts;
 				// Devuelvo la cantidad del producto eliminado al stock del producto
 				listProducts[indexProduct].stock += foundProductInCart.quantity;  
-				
+
 				// Le doy permanencia a los cambios realizados
 				await this.fsWrite(this.cartsPath, this.#carts); 
 				await this.fsWrite(this.productsPath, listProducts); 

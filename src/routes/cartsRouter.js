@@ -23,7 +23,7 @@ cartsRouter.get("/", async (req, res) => {
 
 			const firstCarts = carts.splice(0, limitStart);
 
-			res.status(302).send(firstCarts);
+			res.status(302).json({status: "success", resolve: firstCarts});
 
 			return;
 
@@ -33,16 +33,16 @@ cartsRouter.get("/", async (req, res) => {
 
 			const lastCarts = carts.splice(-limitEnd);
 
-			res.status(302).send(lastCarts);
+			res.status(302).json({status: "success", resolve: lastCarts});
 
 			return;
 		};
 
-		res.status(302).send(carts);
+		res.status(302).json({status: "success", resolve: carts});
 	}
 	catch(err) {
 
-		res.status(404).send(err);
+		res.status(404).json({status: "Error", message: err});
 
 	};
 
@@ -56,11 +56,11 @@ cartsRouter.get("/:cid", async (req, res) => {
 
 		const cart = await cartsManager.getCartById(Number(req.params.cid));
 
-		res.status(302).send(cart);
+		res.status(302).json({status: "success", resolve: cart});
 	}
 	catch(err) {
 
-		res.status(404).send(err);
+		res.status(404).json({status: "Error", message: err});
 
 	};
 
@@ -71,12 +71,12 @@ cartsRouter.post("/", async (req, res) => {
 
 	try{
 
-		res.status(201).send(await cartsManager.addCart());
+		res.status(201).json({status: "success", resolve: await cartsManager.addCart()});
 
 	}
 	catch(err) {
 
-		res.status(400).send(err);
+		res.status(400).json({status: "Error", message: err});
 	}
 
 
@@ -90,12 +90,12 @@ cartsRouter.post("/:cid/product/:pid", async (req, res) => {
 		const cartId = Number(req.params.cid);
 		const productId = Number(req.params.pid);
 		
-		res.status(201).send(await cartsManager.addProductToCart(cartId, productId));
+		res.status(201).json({status: "success", resolve: await cartsManager.addProductToCart(cartId, productId)});
 
 	}
 	catch(err) {
 
-		res.status(404).send(err);
+		res.status(404).json({status: "Error", message: err});
 
 	}
 
@@ -109,17 +109,15 @@ cartsRouter.delete("/:cid/products/:pid", async (req, res) => {
 
 		const cartId = Number(req.params.cid);
 		const productId = Number(req.params.pid);
-		res.status(200).send(await cartsManager.deleteProductToCart(cartId, productId));
+		res.status(200).json({status: "success", resolve: await cartsManager.deleteProductToCart(cartId, productId)});
 
 	}catch(err) {
 
-		res.status(404).send(err);
+		res.status(404).json({status: "Error", message: err});
 
 	};
 
 });
-
-
 
 
 export default cartsRouter;

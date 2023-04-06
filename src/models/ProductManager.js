@@ -61,7 +61,7 @@ class ProductManager {
 				description,
 				category,
 				price,
-				thumbnail: thumbnail,
+				thumbnail,
 				code,
 				stock,
 				status: true,
@@ -78,9 +78,7 @@ class ProductManager {
 				return err;
 			}
 
-			return `The product:
-				${JSON.stringify(newProduct)}
-				was successfully added`;
+			return newProduct;
 		}
 		
 		// Si alguno de los campos enviados no coinciden con los tipos de datos requeridos o el codigo esta duplicado lanzo una excepcion...
