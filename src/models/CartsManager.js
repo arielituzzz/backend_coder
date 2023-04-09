@@ -7,7 +7,6 @@ class CartsManager {
 
 	constructor() {
 		this.cartsPath = "./src/bd/Carts.json"
-		this.productsPath = "./src/bd/Products.json"
 		this.encoding = {encoding: "utf-8"}
 		this.#autoId = 0
 		this.#carts = []
@@ -27,19 +26,13 @@ class CartsManager {
 		}
 
 	};
-	// Traigo los productos del archivo Products.json para poder realizar modificaciones en otros metodos
-	async loadProductsData() {
-
-		return JSON.parse(await fs.readFile(this.productsPath,this.encoding));
-
-	};
 
 	// Metodo reutilizable para la escritura de archivos.
-	async fsWrite (path, array) {
+	async fsWrite (array) {
 
 		try
 		{	
-			await fs.writeFile(path, JSON.stringify(array)); 
+			await fs.writeFile(this.cartsPath, JSON.stringify(array)); 
 		}
 		catch(err){
 			return err;
@@ -64,7 +57,7 @@ class CartsManager {
 			this.#carts.push(newCart);
 
 			// Le doy permanencia a los cambios realizados
-			await this.fsWrite(this.cartsPath, this.#carts); 
+			await this.fsWrite(this.#carts); 
 
 			return newCart;
 
@@ -77,47 +70,38 @@ class CartsManager {
 	};
 
 	// AGREGO UN PRODUCTO AL CARRITO
-	async addProductToCart(cartId, productId) {
+	async addProductToCart(cartId, product) {
 
-
-
+		try{
 		await this.loadCartsData();
+		}catch(err) {
+			return err;
+		}
+
 		const indexCart = this.#carts.findIndex(cart => cart.id === cartId);	
 
-		const listProducts = await this.loadProductsData();
-		const indexProduct = listProducts.findIndex(product => product.id === productId);
+		const foundCart = this.#carts[indexCart];
+		console.log(indexCart)
 
-		const foundCart = this.#carts[indexCart];	
-		const foundProduct = listProducts[indexProduct];
+		// Si existe el carrito...
+		if(indexCart >= 0) {
 
-		// Si existe el carrito y existe el producto...
-		if(indexCart >= 0 && indexProduct >= 0) {
-
-			const newProduct = {id: foundProduct.id, quantity: 1};
+			const newProduct = {id: product.id, quantity: 1};
 			const indexProductInCart = foundCart.products.findIndex(product => product.id === newProduct.id);
 
-			// Si el producto no existe en el carrito lo agrego directamente y resto la cantidad al stock del producto
-			if(foundCart.products.length <= 0 || indexProductInCart < 0) {
+			// Si el producto no existe en el carrito lo agrego directamente
+			if(indexProductInCart < 0) {
 				foundCart.products.push(newProduct);
-				--foundProduct.stock;
-				// Si el producto ya existe agrego solamente la cantidad y resto la misma al stock del producto
+				// Si el producto ya existe agrego solamente la cantidad
 			}else{
-				if(foundProduct.stock > 0) {
 					foundCart.products[indexProductInCart].quantity++;
-					--foundProduct.stock;
-					// Si ya no hay mas stock del producto lanzo una excepcion...
-				}else{
-					throw `Error: Amount Exceeded` ;
-				}
-
 			}
 
 			try
 			{
 				// Le doy permanencia a los cambios realizados
-				await this.fsWrite(this.cartsPath, this.#carts); 
-				await this.fsWrite(this.productsPath, listProducts); 
-				return {cartId: cartId, productId: newProduct.id, quantity: newProduct.quantity, stock_available: foundProduct.stock};
+				await this.fsWrite(this.#carts); 
+				return {cartId: cartId, productId: newProduct.id, quantity: newProduct.quantity};
 
 			}catch(err) {
 				return err;
@@ -125,7 +109,7 @@ class CartsManager {
 
 		}
 		// Si no existe el carrito o el producto lanzo una excepcion...
-		throw "Error: No Cart o Product found";
+		throw "Error: Cart not found";
 
 
 	};
@@ -172,25 +156,20 @@ class CartsManager {
 	async deleteProductToCart(cartId, productId) {
 
 		try{
+
 			await this.loadCartsData();
 			const foundIndexCart = this.#carts.findIndex(cart => cart.id === cartId );
 			const foundCart = this.#carts[foundIndexCart];
 			const foundProductInCart = foundCart.products.find(product => product.id === productId);
-
-			const listProducts = await this.loadProductsData();
-			const indexProduct = listProducts.findIndex(product => product.id === productId);
 
 			if(foundIndexCart >= 0 && foundProductInCart) {
 
 				// Realizo un filtro invertido para eliminar el producto del carrito
 				const newProducts = foundCart.products.filter(products => products.id !== productId);
 				this.#carts[foundIndexCart].products = newProducts;
-				// Devuelvo la cantidad del producto eliminado al stock del producto
-				listProducts[indexProduct].stock += foundProductInCart.quantity;  
 
 				// Le doy permanencia a los cambios realizados
-				await this.fsWrite(this.cartsPath, this.#carts); 
-				await this.fsWrite(this.productsPath, listProducts); 
+				await this.fsWrite(this.#carts); 
 
 				return `The product with ID ${foundProductInCart.id} was successfully deleted`
 			}

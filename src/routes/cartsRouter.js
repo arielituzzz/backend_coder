@@ -1,9 +1,12 @@
 import {Router} from "express";
-import CartsManager from "../models/CartsManager.js"
+import CartsManager from "../models/CartsManager.js";
+import ProductManager from "../models/ProductManager.js";
 
 const cartsRouter = Router();
 
 const cartsManager = new CartsManager();
+
+const productManager = new ProductManager();
 
 //LISTADO DE CARRITOS CON OPCION A VER LOS PRIMEROS O LOS ULTIMOS
 cartsRouter.get("/", async (req, res) => {
@@ -89,8 +92,10 @@ cartsRouter.post("/:cid/product/:pid", async (req, res) => {
 
 		const cartId = Number(req.params.cid);
 		const productId = Number(req.params.pid);
-		
-		res.status(201).json({status: "success", resolve: await cartsManager.addProductToCart(cartId, productId)});
+
+		const foundProduct = await productManager.getProductById(productId);
+		res.status(201).json({status: "success", resolve: await cartsManager.addProductToCart(cartId, foundProduct)});
+
 
 	}
 	catch(err) {
@@ -109,6 +114,7 @@ cartsRouter.delete("/:cid/products/:pid", async (req, res) => {
 
 		const cartId = Number(req.params.cid);
 		const productId = Number(req.params.pid);
+
 		res.status(200).json({status: "success", resolve: await cartsManager.deleteProductToCart(cartId, productId)});
 
 	}catch(err) {
