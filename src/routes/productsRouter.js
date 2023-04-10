@@ -14,7 +14,7 @@ productsRouter.get("/", async (req, res) => {
 		const products = await productManager.getProducts();
 
 
-		res.render("home", {products:products})
+		res.render("realTimeProducts", {products:products})
 	}
 	catch(err) {
 
