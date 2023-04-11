@@ -2,6 +2,7 @@ import express from 'express';
 import { engine } from 'express-handlebars';
 import { resolve } from 'path';
 import {Server} from 'socket.io';
+import productsRouter from '/routes/productsRouter.js'
 import ProductManager from "./models/ProductManager.js";
 
 void(async() =>
@@ -16,6 +17,7 @@ void(async() =>
 
 			app.use(express.json());
 			app.use(express.urlencoded({ extended: true }));
+			app.use("/", productsRouter);
 
 			const viewsPath = resolve('src/views');
 
