@@ -1,6 +1,6 @@
 import {Router} from "express";
-import { uploader } from '../utils/multer.js';
-import ProductManager from "../models/ProductManager.js"
+import ProductManager from "../models/ProductManager.js";
+import {client, runDB} from "../bd/mongo_config.js";
 
 const productsRouter = Router();
 
@@ -16,6 +16,24 @@ productsRouter.get("/", async (req, res) => {
 	const limitEnd = parseInt(req.query.limitEnd);
 
 	try{
+		
+		const db = runDB("sample_mflix","movies");
+
+		// Query for a movie that has the title 'The Room'
+		//const query = { title: "The Room" };
+		//const options = {
+			//               // sort matched documents in descending order by rating
+			//sort: { "imdb.rating": -1 },
+			//                           // Include only the `title` and `imdb` fields in the returned document
+			//projection: { _id: 0, title: 1, imdb: 1 },
+		//};
+		//const movie = await db.findOne(query, options);
+		const movie = await db.findOne({title: "The Room"});
+		//                                             // since this method returns the matched document, not a cursor, print it directly
+		console.log(movie);
+
+
+
 
 		// Traigo los productos del archivo Products.json
 		const products = await productManager.getProducts();
@@ -45,6 +63,8 @@ productsRouter.get("/", async (req, res) => {
 
 		res.status(404).json({status: "Error", message: err});
 
+	}finally {
+		await client.close();
 	};
 
 
@@ -66,30 +86,6 @@ productsRouter.get("/:pid", async (req, res) => {
 	};
 
 });
-
-
-//SUBO IMAGENES
-productsRouter.put("/:pid/images", uploader.array("file"), async (req, res) => {
-
-	try{
-		if(req.files) {
-		const id = Number(req.params.pid);
-		const listFiles = [];
-		const files = req.files.map(img => {
-			listFiles.push(img.path);
-		});
-			const thumbnail = {thumbnail: listFiles};
-		
-		res.status(200).json({status: "success", resolve: await productManager.updateProduct(id, thumbnail)});
-		}else{
-			res.status(400).json({status: "Error", message: "Upload fail"});
-		}
-	}catch(err) {
-		res.status(400).json({status: "Error", message: err});
-	}
-
-	});
-
 
 //CREO UN NUEVO PRODUCTO
 productsRouter.post("/", async (req, res) => {
