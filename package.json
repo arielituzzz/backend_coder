@@ -1,7 +1,7 @@
 {
   "name": "backend_coder",
   "version": "1.0.0",
-  "description": "Primera Entrega",
+  "description": "Segunda pre-entrega",
   "main": "src/server.js",
   "scripts": {
     "start": "nodemon"
