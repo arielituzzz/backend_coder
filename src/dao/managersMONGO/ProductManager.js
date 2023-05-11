@@ -1,12 +1,12 @@
 import ProductsMongoose from "./ProductsMongoose.js";
-// import CourseMongooseDao from "../daos/CourseMongooseDao.js";
+import CartsMongoose from "./CartsMongoose.js";
 
 class ProductManager
 {
 	constructor()
 	{
 		this.products = new ProductsMongoose();
-		// this.courseDao = new CourseMongooseDao();
+		this.carts= new CartsMongoose();
 	}
 
 	async find()
@@ -14,9 +14,9 @@ class ProductManager
 		return this.products.find();
 	}
 
-	async getOne(code)
+	async getOne(id)
 	{
-		return this.products.getOne(code);
+		return this.products.getOne(id);
 	}
 
 	async create(data)
@@ -24,9 +24,9 @@ class ProductManager
 		return await this.products.create(data);
 	}
 
-	async updateOne(code, data)
+	async updateOne(id, data)
 	{
-		return this.products.updateOne(code, data);
+		return this.products.updateOne(id, data);
 	}
 
 	async deleteOne(id)
@@ -34,26 +34,64 @@ class ProductManager
 		return this.products.deleteOne(id);
 	}
 
-//async addCourse(sid, cid)
-//{
-//	const student = await this.studentDao.getOne(sid);
-//	const course = await this.courseDao.getOne(cid);
-//
-//	const oldCoursesId = student.courses.map(course => course.id);
-//
-//	oldCoursesId.forEach((id) =>
-//		{
-//			if( id.toString() !== course.id.toString() )
-//			{
-//				oldCoursesId.push(course.id);
-//			}
-//		});
-//
-//	student.courses = oldCoursesId;
-//
-//	await this.studentDao.updateOne(sid, student);
-//}
+	async addProductToCart(pid, cid)
+	{
+
+		try{
+			const cart = await this.carts.getOne(cid);
+			const product = await this.products.getOne(pid);
+			const newProduct = {
+				_id: product._id, quantity: 1				
+			}	
+
+			const productOnCart = cart.products.find(p => p._id.toString() === product._id.toString());
+
+			if(productOnCart)
+			{
+				productOnCart.quantity++;
+			}
+			else
+			{
+				cart.products.push(newProduct);
+			}
+
+			return await this.carts.updateOne(cid, cart.products);	
+
+		}catch(error){
+			return error;
+		}	
+	}
+
+	async productDisabled(pid)
+	{
+		try{
+
+			const product = await this.products.getOne(pid);
+			product.status = false;
+
+			return await this.products.updateOne(pid, product);
+
+		}catch(error){
+			return error;
+		}
+	}
+
+	async productEnabled(pid)
+	{
+		try{
+
+			const product = await this.products.getOne(pid);
+			product.status = true;
+
+			return await this.products.updateOne(pid, product);
+
+	}catch(error){
+		return error;
+	}
+};
 
 }
 
 export default ProductManager;
+
+

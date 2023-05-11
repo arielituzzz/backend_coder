@@ -6,7 +6,7 @@ class CartManager
 	constructor()
 	{
 		this.carts = new CartsMongoose();
-		// this.courseDao = new CourseMongooseDao();
+		
 	}
 
 	async find()
@@ -24,35 +24,15 @@ class CartManager
 		return await this.carts.create();
 	}
 
-	async updateOne(code, data)
+	async updateOne(id, data)
 	{
-		return this.products.updateOne(code, data);
+		return this.products.updateOne(id, data);
 	}
 
 	async deleteOne(id)
 	{
 		return this.products.deleteOne(id);
 	}
-
-//async addCourse(sid, cid)
-//{
-//	const student = await this.studentDao.getOne(sid);
-//	const course = await this.courseDao.getOne(cid);
-//
-//	const oldCoursesId = student.courses.map(course => course.id);
-//
-//	oldCoursesId.forEach((id) =>
-//		{
-//			if( id.toString() !== course.id.toString() )
-//			{
-//				oldCoursesId.push(course.id);
-//			}
-//		});
-//
-//	student.courses = oldCoursesId;
-//
-//	await this.studentDao.updateOne(sid, student);
-//}
 
 }
 

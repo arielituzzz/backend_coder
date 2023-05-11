@@ -13,11 +13,11 @@ class CartController
 
 export const getOne = async (req, res) =>
 {
-	const { id } = req.params;
+	const { cid } = req.params;
 
 	const manager = new CartManager();
 
-	const cart = await manager.getOne(id);
+	const cart = await manager.getOne(cid);
 	res.send({ status: 'success', cart });
 };
 
@@ -31,33 +31,24 @@ export const save = async (req, res) =>
 
 export const update = async (req, res) =>
 {
-	const { id } = req.params;
+	const { cid } = req.params;
 
 	const manager = new CartManager();
 
-	const result = await manager.updateOne(id, req.body);
+	const result = await manager.updateOne(cid, req.body);
 
 	res.send({ status: 'success', result, message: 'Cart updated.' })
 };
 
 export const deleteOne = async (req, res) =>
 {
-	const { id } = req.params;
+	const { cid } = req.params;
 
 	const manager = new CartManager();
 
-	const cart = await manager.deleteOne(id);
+	const cart = await manager.deleteOne(cid);
 	res.send({ status: 'success', message: 'Cart deleted.' })
 };
 
-// export const addCourse = async (req, res) =>
-//
-// const { sid, cid } = req.params;
-//
-// const manager = new StudentManager();
-//
-// const student = await manager.addCourse(sid, cid);
-// res.send({ status: 'success', student, message: 'Student updated.' })
-//;
 
 export default CartController;

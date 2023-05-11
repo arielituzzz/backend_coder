@@ -1,13 +1,15 @@
 import { Router } from 'express';
-import ProductController, { getOne, save, update, deleteOne } from "../controllers/ProductController.js";
+import ProductController, { getOne, save, update, deleteOne, addToCart, productDisabled, productEnabled } from "../controllers/ProductController.js";
 
 const productsRouter = Router();
 
 productsRouter.get('/', ProductController.list);
-productsRouter.get('/:code', getOne);
+productsRouter.get('/:pid', getOne);
 productsRouter.post('/', save);
-// productsRouter.post('/:sid/courses/:cid', addCourse);
-productsRouter.put('/:code', update);
-productsRouter.delete('/:id', deleteOne);
+productsRouter.post('/:pid/cart/:cid', addToCart);
+productsRouter.put('/:pid', update);
+productsRouter.put('/:pid/disable', productDisabled);
+productsRouter.put('/:pid/enable', productEnabled);
+productsRouter.delete('/:pid', deleteOne);
 
 export default productsRouter;

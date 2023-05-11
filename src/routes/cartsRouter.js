@@ -4,9 +4,9 @@ import CartController, { deleteOne, getOne, save, update } from "../controllers/
 const cartsRouter = Router();
 
 cartsRouter.get('/', CartController.list);
-cartsRouter.get('/:id', getOne);
+cartsRouter.get('/:cid', getOne);
 cartsRouter.post('/', save);
-cartsRouter.put('/:id', update);
-cartsRouter.delete('/:id', deleteOne);
+cartsRouter.put('/:cid', update);
+cartsRouter.delete('/:cid', deleteOne);
 
 export default cartsRouter;

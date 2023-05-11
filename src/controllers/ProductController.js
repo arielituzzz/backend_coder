@@ -13,16 +13,17 @@ class ProductController
 
 export const getOne = async (req, res) =>
 {
-	const { code } = req.params;
+	const { pid } = req.params;
 
 	const manager = new ProductManager();
 
-	const product = await manager.getOne(code);
+	const product = await manager.getOne(pid);
 	res.send({ status: 'success', product });
 };
 
 export const save = async (req, res) =>
-{
+{	
+
 	const manager = new ProductManager();
 	const product = await manager.create(req.body);
 
@@ -31,33 +32,68 @@ export const save = async (req, res) =>
 
 export const update = async (req, res) =>
 {
-	const { code } = req.params;
+	const { pid } = req.params;
 
 	const manager = new ProductManager();
 
-	const result = await manager.updateOne(code, req.body);
+	const result = await manager.updateOne(pid, req.body);
 
 	res.send({ status: 'success', result, message: 'Product updated.' })
 };
 
 export const deleteOne = async (req, res) =>
 {
-	const { id } = req.params;
+	const { pid } = req.params;
 
 	const manager = new ProductManager();
 
-	const product = await manager.deleteOne(id);
+	const product = await manager.deleteOne(pid);
 	res.send({ status: 'success', message: 'Product deleted.' })
 };
 
-// export const addCourse = async (req, res) =>
-//
-// const { sid, cid } = req.params;
-//
-// const manager = new StudentManager();
-//
-// const student = await manager.addCourse(sid, cid);
-// res.send({ status: 'success', student, message: 'Student updated.' })
-//;
+export const addToCart = async (req, res) =>
+{
+	try{
+		const { pid, cid } = req.params;
+
+		const manager = new ProductManager();
+
+		const cart = await manager.addProductToCart(pid, cid);
+		res.send({ status: 'success', cart, message: 'Cart updated.' });
+
+	}catch(err){
+		return err;
+	}
+};
+
+export const productDisabled = async (req, res) =>
+{
+	try{
+	const { pid } = req.params;
+
+	const manager = new ProductManager();
+
+	const product = await manager.productDisabled(pid);
+
+	res.send({ status: 'success', product, message: 'Product disabled.' });
+	}catch(err){
+		return err;
+	}
+};
+
+export const productEnabled = async (req, res) =>
+{
+	try{
+	const { pid } = req.params;
+
+	const manager = new ProductManager();
+
+	const product = await manager.productEnabled(pid);
+
+	res.send({ status: 'success', product, message: 'Product enabled.' });
+	}catch(err){
+		return err;
+	}	
+};
 
 export default ProductController;

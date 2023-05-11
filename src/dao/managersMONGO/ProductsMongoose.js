@@ -19,29 +19,17 @@ class ProductsMongoose
 		}));
 	}
 
-	async getOne(code)
+	async getOne(id)
 	{
 		const productDocument = await productSchema
-			.findOne({ code: code });
+			.findOne({ _id: id });
 
 		if(!productDocument)
 		{
 			throw new Error("Product don't exist.");
 		}
 	return productDocument;
-	//return productDocument.map(document => ({
-	//	id: document._id,
-	//	title: document.title,
-	//	description: document.description,
-	//	category: document.category,
-	//	price: document.price,
-	//	thumbnail: document.thumbnail.map(imgs => imgs),
-	//	code: document.code,
-	//	status: document.status
-	//	
-	//}));
 	}
-
 	async create(data)
 	{
 		const productDocument = await productSchema.create(data);
@@ -59,10 +47,10 @@ class ProductsMongoose
 		}
 	}
 
-	async updateOne(code, data)
+	async updateOne(id, data)
 	{
 		const productDocument = await productSchema
-			.findOneAndUpdate({ code: code }, data, { new: true});
+			.findOneAndUpdate({ _id: id }, data, { new: true});
 
 		if(!productDocument)
 		{
@@ -82,9 +70,9 @@ class ProductsMongoose
 		}
 	}
 
-	async deleteOne(code)
+	async deleteOne(id)
 	{
-		return productSchema.deleteOne({ code: code });
+		return productSchema.deleteOne({ _id: id });
 	}
 }
 
