@@ -11,6 +11,15 @@ class ProductController
 	};
 }
 
+export const getWithAggregates = async (req, res) =>
+{
+	const { status, limit, category, sort } = req.query;
+
+	const manager = new ProductManager();
+	const products = await manager.findWithAggregates(status, limit, category, sort);
+	res.send({ status: 'success', products });
+};
+
 export const getOne = async (req, res) =>
 {
 	const { pid } = req.params;

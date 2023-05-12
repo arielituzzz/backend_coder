@@ -1,5 +1,6 @@
 import ProductsMongoose from "./ProductsMongoose.js";
 import CartsMongoose from "./CartsMongoose.js";
+import ProductsAggregate from "../aggregates/productsAggregate.js";
 
 class ProductManager
 {
@@ -7,11 +8,17 @@ class ProductManager
 	{
 		this.products = new ProductsMongoose();
 		this.carts= new CartsMongoose();
+		this.aggregates = new ProductsAggregate();
 	}
 
 	async find()
 	{
 		return this.products.find();
+	}
+
+	async findWithAggregates(status,limit, category, sort)
+	{
+		return this.aggregates.filters(status, limit, category, sort);
 	}
 
 	async getOne(id)

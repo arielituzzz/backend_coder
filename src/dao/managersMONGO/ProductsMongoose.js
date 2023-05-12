@@ -2,6 +2,9 @@ import productSchema from "../models/ProductSchema.js";
 
 class ProductsMongoose
 {
+
+// OBTENER TODOS LOS PRODUCTOS
+
 	async find()
 	{
 		const productsDocuments = await productSchema.find();
@@ -15,9 +18,11 @@ class ProductsMongoose
 			thumbnail: document.thumbnail.map(imgs => imgs),
 			code: document.code,
 			status: document.status
-			
+
 		}));
 	}
+
+// OBTENER UN PRODUCTO POR SU ID
 
 	async getOne(id)
 	{
@@ -28,7 +33,7 @@ class ProductsMongoose
 		{
 			throw new Error("Product don't exist.");
 		}
-	return productDocument;
+		return productDocument;
 	}
 	async create(data)
 	{
@@ -46,6 +51,8 @@ class ProductsMongoose
 			status: productDocument.status
 		}
 	}
+
+// ACTUALIZAR UN PRODUCTO
 
 	async updateOne(id, data)
 	{
@@ -70,10 +77,14 @@ class ProductsMongoose
 		}
 	}
 
+// ELIMINAR UN PRODUCTO
+
 	async deleteOne(id)
 	{
 		return productSchema.deleteOne({ _id: id });
 	}
+
+
 }
 
 export default ProductsMongoose;
