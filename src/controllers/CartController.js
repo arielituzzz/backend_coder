@@ -40,15 +40,52 @@ export const update = async (req, res) =>
 	res.send({ status: 'success', result, message: 'Cart updated.' })
 };
 
-export const deleteOne = async (req, res) =>
+
+export const updateQuantity = async (req, res) =>
 {
-	const { cid } = req.params;
+	const { cid, pid } = req.params;
 
 	const manager = new CartManager();
 
-	const cart = await manager.deleteOne(cid);
-	res.send({ status: 'success', message: 'Cart deleted.' })
+	const result = await manager.updateQuantity(cid, pid, Number(req.body.quantity));
+
+	res.send({ status: 'success', result, message: 'Cart updated.' })
+
+}
+
+
+export const deleteOneProduct = async (req, res) =>
+{
+	try
+	{
+	const { cid, pid } = req.params;
+	
+	const manager = new CartManager();
+
+	const cart = await manager.deleteOneProduct(cid, pid);
+	res.send({ status: 'success',cart ,cid, pid,message: 'Product deleted.' })
+	}
+	catch (error)
+	{
+		res.send({ status: 'error', error })
+	}
 };
 
+export const deleteAllProducts = async (req, res) =>
+{
+	try
+	{
+	const { cid } = req.params;
+	
+	const manager = new CartManager();
+	
+	const result = await manager.deleteAllProducts(cid);
+	res.send({ status: 'success',result , message: 'All products deleted.' })
+	}
+	catch (error)
+	{
+		res.send({ status: 'error', error })
+	}	
+};
 
 export default CartController;

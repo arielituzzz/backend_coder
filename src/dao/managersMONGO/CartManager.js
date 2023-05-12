@@ -24,14 +24,25 @@ class CartManager
 		return await this.carts.create();
 	}
 
+	async updateQuantity(cid,pid, quantity)
+	{
+    return await this.carts.updateQuantity(cid,pid,quantity);		
+	}
+
+
 	async updateOne(id, data)
 	{
 		return this.products.updateOne(id, data);
 	}
 
-	async deleteOne(id)
+	async deleteOneProduct(cid, pid)
 	{
-		return this.products.deleteOne(id);
+			return this.carts.deleteOneProduct(cid, pid);	
+	}
+
+	async deleteAllProducts	(cid)
+	{
+		return this.carts.deleteAllProducts(cid);
 	}
 
 }
