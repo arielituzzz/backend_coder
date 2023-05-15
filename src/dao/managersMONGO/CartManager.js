@@ -1,3 +1,5 @@
+import CartsMongoose from "./CartsMongoose.js";
+
 class CartManager {
   constructor() {
     this.carts = new CartsMongoose();
@@ -20,7 +22,7 @@ class CartManager {
   }
 
   async updateOne(id, data) {
-    return this.products.updateOne(id, data);
+    return this.carts.updateOne(id, data);
   }
 
   async deleteOneProduct(cid, pid) {

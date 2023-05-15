@@ -2,108 +2,87 @@ import ProductsMongoose from "./ProductsMongoose.js";
 import CartsMongoose from "./CartsMongoose.js";
 import ProductsAggregate from "../aggregates/productsAggregate.js";
 
-class ProductManager
-{
-	constructor()
-	{
-		this.products = new ProductsMongoose();
-		this.carts= new CartsMongoose();
-		this.aggregates = new ProductsAggregate();
-	}
+class ProductManager {
+  constructor() {
+    this.products = new ProductsMongoose();
+    this.carts = new CartsMongoose();
+    this.aggregates = new ProductsAggregate();
+  }
 
-	async paginate(data)
-	{
-		return this.products.paginate(data);
-	}
+  async paginate(data) {
+    return this.products.paginate(data);
+  }
 
-	async find()
-	{
-		return this.products.find();
-	}
+  async find() {
+    return this.products.find();
+  }
 
-	async findWithAggregates(status,limit, category, sort)
-	{
-		return this.aggregates.filters(status, limit, category, sort);
-	}
+  async findWithAggregates(status, limit, category, sort) {
+    return this.aggregates.filters(status, limit, category, sort);
+  }
 
-	async getOne(id)
-	{
-		return this.products.getOne(id);
-	}
+  async getOne(id) {
+    return this.products.getOne(id);
+  }
 
-	async create(data)
-	{
-		return await this.products.create(data);
-	}
+  async create(data) {
+    return await this.products.create(data);
+  }
 
-	async updateOne(id, data)
-	{
-		return this.products.updateOne(id, data);
-	}
+  async updateOne(id, data) {
+    return this.products.updateOne(id, data);
+  }
 
-	async deleteOne(id)
-	{
-		return this.products.deleteOne(id);
-	}
+  async deleteOne(id) {
+    return this.products.deleteOne(id);
+  }
 
-	async addProductToCart(pid, cid)
-	{
+  async addProductToCart(pid, cid) {
+    try {
+      const cart = await this.carts.getOne(cid);
+      const product = await this.products.getOne(pid);
+      const newProduct = {
+        _id: product._id,
+        quantity: 1,
+      };
 
-		try{
-			const cart = await this.carts.getOne(cid);
-			const product = await this.products.getOne(pid);
-			const newProduct = {
-				_id: product._id, quantity: 1				
-			}	
+      const productOnCart = cart.products.find(
+        (p) => p._id.toString() === product._id.toString()
+      );
 
-			const productOnCart = cart.products.find(p => p._id.toString() === product._id.toString());
+      if (productOnCart) {
+        productOnCart.quantity++;
+      } else {
+        cart.products.push(newProduct);
+      }
 
-			if(productOnCart)
-			{
-				productOnCart.quantity++;
-			}
-			else
-			{
-				cart.products.push(newProduct);
-			}
+      return await this.carts.updateOne(cid, cart.products);
+    } catch (error) {
+      return error;
+    }
+  }
 
-			return await this.carts.updateOne(cid, cart.products);	
+  async productDisabled(pid) {
+    try {
+      const product = await this.products.getOne(pid);
+      product.status = false;
 
-		}catch(error){
-			return error;
-		}	
-	}
+      return await this.products.updateOne(pid, product);
+    } catch (error) {
+      return error;
+    }
+  }
 
-	async productDisabled(pid)
-	{
-		try{
+  async productEnabled(pid) {
+    try {
+      const product = await this.products.getOne(pid);
+      product.status = true;
 
-			const product = await this.products.getOne(pid);
-			product.status = false;
-
-			return await this.products.updateOne(pid, product);
-
-		}catch(error){
-			return error;
-		}
-	}
-
-	async productEnabled(pid)
-	{
-		try{
-
-			const product = await this.products.getOne(pid);
-			product.status = true;
-
-			return await this.products.updateOne(pid, product);
-
-		}catch(error){
-			return error;
-		}
-	};
-
+      return await this.products.updateOne(pid, product);
+    } catch (error) {
+      return error;
+    }
+  }
 }
 
 export default ProductManager;
-
-
