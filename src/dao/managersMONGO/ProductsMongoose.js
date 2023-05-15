@@ -61,17 +61,19 @@ class ProductsMongoose
 	{
 		const productDocument = await productSchema.create(data);
 
-		return {
-			id: productDocument._id,
-			title: productDocument.title,
-			description: productDocument.description,
-			category: productDocument.category,
-			price: productDocument.price,
-			thumbnail: productDocument.thumbnail.map(imgs => imgs),
-			code: productDocument.code,
-			stock: productDocument.stock,
-			status: productDocument.status
-		}
+	//return {
+	//	id: productDocument._id,
+	//	title: productDocument.title,
+	//	description: productDocument.description,
+	//	category: productDocument.category,
+	//	price: productDocument.price,
+	//	thumbnail: productDocument.thumbnail.map(imgs => imgs),
+	//	code: productDocument.code,
+	//	stock: productDocument.stock,
+	//	status: productDocument.status
+	//}
+	return data;
+
 	}
 
 	// ACTUALIZAR UN PRODUCTO

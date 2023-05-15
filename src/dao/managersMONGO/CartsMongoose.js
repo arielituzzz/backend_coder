@@ -61,20 +61,20 @@ class CartsMongoose
 	}
 
 	async updateOne(id, data)
-	{
-		try
-		{
+	{	
 
 			const newProduct = {_id: data._id, quantity: 1} 
-
-
+const cart = await cartSchema.findOne(
+			{ _id: id }	
+)
+		if(!cart)
+		{
+			throw new Error("Cart don't exist.");
+		}
 
 			return await cartSchema
 				.findOneAndUpdate({ _id: id },{products: data}, { new: true});
 
-		}catch{
-			throw new Error("Cart don't exist.");
-		}
 	}
 
 	async deleteOneProduct(cid, pid)
@@ -82,13 +82,23 @@ class CartsMongoose
  const cart = await cartSchema.findOne(
 			{ _id: cid }
  )
-		const product = await cartSchema.updateOne({ _id: cid }, { $pull: { products: { _id: pid }  } });	
-		if(!product)
+		const indexProduct = cart.products.findIndex(
+			
+			(prod) => prod._id == pid);
+
+		if(!cart || indexProduct < 0)
 		{
 			throw new Error("Cart or product don't exist.");
 		}
+		
+		const productDeleted = {...cart.products[indexProduct]};
 
-		return product;
+		cart.products.splice(indexProduct, 1);
+
+		const newCart = await cartSchema.updateOne(
+			{ _id: cid }, { $set: { products: cart.products }}		)	
+
+		return productDeleted;
 	}
 
 	async deleteAllProducts(cid)

@@ -62,14 +62,15 @@ export const deleteOneProduct = async (req, res) =>
 	
 	const manager = new CartManager();
 
-	const cart = await manager.deleteOneProduct(cid, pid);
-	res.send({ status: 'success',cart ,cid, pid,message: 'Product deleted.' })
+	const product = await manager.deleteOneProduct(cid, pid);
+	res.send({ status: 'success',product, message: 'Product deleted.' })
 	}
 	catch (error)
 	{
-		res.send({ status: 'error', error })
+		res.send({ status: 'error', error:error.message })
 	}
 };
+
 
 export const deleteAllProducts = async (req, res) =>
 {
@@ -84,7 +85,7 @@ export const deleteAllProducts = async (req, res) =>
 	}
 	catch (error)
 	{
-		res.send({ status: 'error', error })
+		res.send({ status: 'error', error:error.message })
 	}	
 };
 
