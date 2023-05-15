@@ -3,7 +3,29 @@ import productSchema from "../models/ProductSchema.js";
 class ProductsMongoose
 {
 
-// OBTENER TODOS LOS PRODUCTOS
+	// OBTENER TODOS LOS PRODUCTOS
+
+	async paginate(criteria)
+	{
+		const { category, limit, page } = criteria;
+		const productDocuments = await productSchema.paginate({ category }, { limit, page });
+
+		productDocuments.docs = productDocuments.docs.map(document => ({
+
+			id: document._id,
+			title: document.title,
+			description: document.description,
+			category: document.category,
+			price: document.price,
+			thumbnail: document.thumbnail.map(imgs => imgs),
+			code: document.code,
+			status: document.status
+
+		}));
+
+		return productDocuments;
+	}
+
 
 	async find()
 	{
@@ -22,7 +44,7 @@ class ProductsMongoose
 		}));
 	}
 
-// OBTENER UN PRODUCTO POR SU ID
+	// OBTENER UN PRODUCTO POR SU ID
 
 	async getOne(id)
 	{
@@ -52,7 +74,7 @@ class ProductsMongoose
 		}
 	}
 
-// ACTUALIZAR UN PRODUCTO
+	// ACTUALIZAR UN PRODUCTO
 
 	async updateOne(id, data)
 	{
@@ -77,7 +99,7 @@ class ProductsMongoose
 		}
 	}
 
-// ELIMINAR UN PRODUCTO
+	// ELIMINAR UN PRODUCTO
 
 	async deleteOne(id)
 	{

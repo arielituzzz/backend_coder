@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import ProductController, { getOne, save, update, deleteOne, addToCart, productDisabled, productEnabled, getWithAggregates } from "../controllers/ProductController.js";
+import ProductController, { listPagination, getOne, save, update, deleteOne, addToCart, productDisabled, productEnabled, getWithAggregates } from "../controllers/ProductController.js";
 
 const productsRouter = Router();
 
 productsRouter.get('/', ProductController.list);
+productsRouter.get('/pagination', listPagination);
 productsRouter.get('/aggregates', getWithAggregates);
 productsRouter.get('/:pid', getOne);
 productsRouter.post('/', save);

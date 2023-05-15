@@ -11,6 +11,11 @@ class ProductManager
 		this.aggregates = new ProductsAggregate();
 	}
 
+	async paginate(data)
+	{
+		return this.products.paginate(data);
+	}
+
 	async find()
 	{
 		return this.products.find();
@@ -92,10 +97,10 @@ class ProductManager
 
 			return await this.products.updateOne(pid, product);
 
-	}catch(error){
-		return error;
-	}
-};
+		}catch(error){
+			return error;
+		}
+	};
 
 }
 

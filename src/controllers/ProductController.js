@@ -11,6 +11,17 @@ class ProductController
 	};
 }
 
+export const listPagination = async (req, res) =>
+{
+	const {category, limit, page} = req.query;
+	const manager = new ProductManager();
+	
+	const results = await manager.paginate({category, limit, page});
+
+	res.send({ status: 'success', products: results.docs, ...results, docs: undefined });
+
+}
+
 export const getWithAggregates = async (req, res) =>
 {
 	const { status, limit, category, sort } = req.query;

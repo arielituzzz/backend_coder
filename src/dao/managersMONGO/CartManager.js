@@ -11,12 +11,12 @@ class CartManager
 
 	async find()
 	{
-		return this.carts.find();
+		return await this.carts.find();
 	}
 
 	async getOne(id)
 	{
-		return this.carts.getOne(id);
+		return await this.carts.getOne(id);
 	}
 
 	async create()
@@ -37,12 +37,12 @@ class CartManager
 
 	async deleteOneProduct(cid, pid)
 	{
-			return this.carts.deleteOneProduct(cid, pid);	
+			return await this.carts.deleteOneProduct(cid, pid);	
 	}
 
 	async deleteAllProducts	(cid)
 	{
-		return this.carts.deleteAllProducts(cid);
+		return await this.carts.deleteAllProducts(cid);
 	}
 
 }

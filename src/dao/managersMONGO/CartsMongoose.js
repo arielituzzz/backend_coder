@@ -79,7 +79,9 @@ class CartsMongoose
 
 	async deleteOneProduct(cid, pid)
 	{
-
+ const cart = await cartSchema.findOne(
+			{ _id: cid }
+ )
 		const product = await cartSchema.updateOne({ _id: cid }, { $pull: { products: { _id: pid }  } });	
 		if(!product)
 		{
