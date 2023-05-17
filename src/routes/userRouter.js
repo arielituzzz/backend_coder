@@ -13,7 +13,7 @@ const userRouter = Router();
 userRouter.get("/", list);
 userRouter.get("/:id", getOne);
 userRouter.post("/", auth, save);
-userRouter.put("/:id", update);
-userRouter.delete("/:id", deleteOne);
+userRouter.put("/:id", auth, update);
+userRouter.delete("/:id", auth, deleteOne);
 
 export default userRouter;
