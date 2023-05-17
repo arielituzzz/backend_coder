@@ -1,4 +1,4 @@
-import CartsMongoose from "./CartsMongoose.js";
+import CartsMongoose from "../dao/CartsMongoose.js";
 
 class CartManager {
   constructor() {

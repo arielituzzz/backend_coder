@@ -1,6 +1,6 @@
-import ProductsMongoose from "./ProductsMongoose.js";
-import CartsMongoose from "./CartsMongoose.js";
-import ProductsAggregate from "../aggregates/productsAggregate.js";
+import ProductsMongoose from "../dao/ProductsMongoose.js";
+import CartsMongoose from "../dao/CartsMongoose.js";
+import ProductsAggregate from "../dao/aggregates/productsAggregate.js";
 
 class ProductManager {
   constructor() {
