@@ -1,5 +1,6 @@
 const authUser = (req, res, next) => {
-  if (req.session?.user?.email && req.session?.user?.role === "user") {
+  // Autorizacion estandar con solo estar autenticado
+  if (req.session?.user?.email) {
     return next();
   }
 

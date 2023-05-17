@@ -4,12 +4,14 @@ import bcrypt from "bcrypt";
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
+  //Validacion por si no se ingresan alguno de los dos datos requeridos
   if (!email && !password) {
     return res
       .status(400)
       .send({ status: "error", message: "Email and Password invalid format." });
   }
 
+  //Validacion para chequear que se vuelva a logear un usuario logeado
   if (req.session?.user) {
     return res
       .status(400)
@@ -19,6 +21,8 @@ export const login = async (req, res) => {
   try {
     const manager = new UserManager();
     const user = await manager.getOneByEmail(email);
+
+    //Validacion para chequear que la contraseña sea correcta (Lo realiza internamente la libreria bcrypt)
     const isHashedPassword = await bcrypt.compare(password, user.password);
 
     if (!isHashedPassword) {
@@ -27,6 +31,7 @@ export const login = async (req, res) => {
         .send({ message: "Login failed, invalid password." });
     }
 
+    //Creacion de la sesion retornando el email y el rol
     req.session.user = { email, role: user.role };
 
     res.send({ status: "success", message: "Login success!" });
@@ -36,6 +41,7 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
+  //Destruccion de la sesion
   req.session.destroy((err) => {
     if (!err) {
       return res.status(200).send({ message: "Logout ok!" });
@@ -49,6 +55,12 @@ export const signup = async (req, res) => {
   try {
     const manager = new UserManager();
 
+    //Validacion para impedir que se pueda asignar roles
+    if (req.body.role) {
+      req.body.role = undefined;
+    }
+
+    //Encryptacion de la contraseña
     const payload = {
       ...req.body,
       password: await bcrypt.hash(req.body.password, 10),

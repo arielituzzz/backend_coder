@@ -1,4 +1,5 @@
 const auth = (req, res, next) => {
+  // Autorizacion superior por estar autenticado bajo el rol de admin
   if (req.session?.user?.email && req.session?.user?.role === "admin") {
     return next();
   }
