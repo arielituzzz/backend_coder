@@ -4,10 +4,6 @@ import bcrypt from "bcrypt";
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
-  // Validar email y password X
-  // Hacer un getOneByEmail con el email y validar que el user exista X
-  // Validar que el password que nosotros mandamos coincida con el password de la base de datos. X
-
   if (!email && !password) {
     return res
       .status(400)
@@ -44,14 +40,18 @@ export const logout = async (req, res) => {
 };
 
 export const signup = async (req, res) => {
-  const manager = new UserManager();
+  try {
+    const manager = new UserManager();
 
-  const payload = {
-    ...req.body,
-    password: await bcrypt.hash(req.body.password, 10),
-  };
+    const payload = {
+      ...req.body,
+      password: await bcrypt.hash(req.body.password, 10),
+    };
 
-  const user = await manager.create(payload);
+    const user = await manager.create(payload);
 
-  res.status(201).send({ status: "success", user, message: "User created." });
+    res.status(201).send({ status: "success", user, message: "User created." });
+  } catch (error) {
+    res.status(400).send({ status: "error", message: error.message });
+  }
 };

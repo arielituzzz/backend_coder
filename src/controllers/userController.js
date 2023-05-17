@@ -12,10 +12,14 @@ export const list = async (req, res) => {
 export const getOne = async (req, res) => {
   const { id } = req.params;
 
-  const manager = new UserManager();
-  const user = await manager.getOne(id);
+  try {
+    const manager = new UserManager();
+    const user = await manager.getOne(id);
 
-  res.send({ status: "success", user });
+    res.status(200).send({ status: "success", user });
+  } catch (error) {
+    res.status(404).send({ status: "error", message: error.message });
+  }
 };
 
 export const save = async (req, res) => {
