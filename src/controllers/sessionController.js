@@ -27,7 +27,7 @@ export const login = async (req, res) => {
         .send({ message: "Login failed, invalid password." });
     }
 
-    req.session.user = { email };
+    req.session.user = { email, role: user.role };
 
     res.send({ status: "success", message: "Login success!" });
   } catch (error) {

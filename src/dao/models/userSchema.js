@@ -9,6 +9,7 @@ const UserSchema = new Schema({
   email: { type: Schema.Types.String, unique: true, required: true },
   age: { type: Schema.Types.Number, default: 18 },
   password: { type: Schema.Types.String },
+  role: { type: Schema.Types.String, enum: ["admin", "user"], default: "user" },
 });
 
 UserSchema.plugin(paginate);

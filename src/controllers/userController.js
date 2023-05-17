@@ -1,4 +1,5 @@
 import UserManager from "../managersDB/UserManager.js";
+import bcrypt from "bcrypt";
 
 export const list = async (req, res) => {
   const { limit, page } = req.query;
@@ -24,7 +25,12 @@ export const getOne = async (req, res) => {
 
 export const save = async (req, res) => {
   const manager = new UserManager();
-  const user = await manager.create(req.body);
+
+  const payload = {
+    ...req.body,
+    password: await bcrypt.hash(req.body.password, 10),
+  };
+  const user = await manager.create(payload);
 
   res.send({ status: "success", user, message: "User created." });
 };

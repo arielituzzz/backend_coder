@@ -30,6 +30,7 @@ class UserMongoose {
       email: userDocument?.email,
       age: userDocument?.age,
       password: userDocument?.password,
+      role: userDocument?.role,
     };
   }
 
@@ -47,6 +48,7 @@ class UserMongoose {
       email: userDocument?.email,
       age: userDocument?.age,
       password: userDocument?.password,
+      role: userDocument?.role,
     };
   }
 
@@ -60,6 +62,7 @@ class UserMongoose {
       email: userDocument.email,
       age: userDocument.age,
       password: userDocument.password,
+      role: userDocument.role,
     };
   }
 

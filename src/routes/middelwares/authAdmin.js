@@ -1,5 +1,5 @@
 const auth = (req, res, next) => {
-  if (req.session?.user?.email) {
+  if (req.session?.user?.email && req.session?.user?.role === "admin") {
     return next();
   }
 
