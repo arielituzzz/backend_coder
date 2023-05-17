@@ -1,4 +1,4 @@
-import userSchema from "../models/userSchema.js";
+import userSchema from "./models/userSchema.js";
 
 class UserMongoose {
   async paginate(criteria) {

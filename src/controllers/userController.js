@@ -1,4 +1,4 @@
-import UserManager from "../managersDB/UserManager";
+import UserManager from "../managersDB/UserManager.js";
 
 export const list = async (req, res) => {
   const { limit, page } = req.query;

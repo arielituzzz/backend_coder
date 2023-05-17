@@ -1,7 +1,7 @@
 {
   "name": "backend_coder",
   "version": "1.0.0",
-  "description": "Segunda pre-entrega",
+  "description": "Desafio 5 - LOGIN",
   "main": "src/server.js",
   "scripts": {
     "start": "nodemon"
