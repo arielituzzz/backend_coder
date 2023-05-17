@@ -10,6 +10,12 @@ export const login = async (req, res) => {
       .send({ status: "error", message: "Email and Password invalid format." });
   }
 
+  if (req.session?.user) {
+    return res
+      .status(400)
+      .send({ status: "error", message: "The user is already logged in." });
+  }
+
   try {
     const manager = new UserManager();
     const user = await manager.getOneByEmail(email);
@@ -32,10 +38,10 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   req.session.destroy((err) => {
     if (!err) {
-      return res.send({ message: "Logout ok!" });
+      return res.status(200).send({ message: "Logout ok!" });
     }
 
-    res.send({ message: "Logout error!", body: err });
+    res.status(400).send({ message: "Logout error!", body: err });
   });
 };
 
