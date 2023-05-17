@@ -9,20 +9,28 @@ export const login = async (req, res) => {
   // Validar que el password que nosotros mandamos coincida con el password de la base de datos. X
 
   if (!email && !password) {
-    throw new Error("Email and Password invalid format.");
+    return res
+      .status(400)
+      .send({ status: "error", message: "Email and Password invalid format." });
   }
 
-  const manager = new UserManager();
-  const user = await manager.getOneByEmail(email);
-  const isHashedPassword = await bcrypt.compare(password, user.password);
+  try {
+    const manager = new UserManager();
+    const user = await manager.getOneByEmail(email);
+    const isHashedPassword = await bcrypt.compare(password, user.password);
 
-  if (!isHashedPassword) {
-    return res.status(401).send({ message: "Login failed, invalid password." });
+    if (!isHashedPassword) {
+      return res
+        .status(401)
+        .send({ message: "Login failed, invalid password." });
+    }
+
+    req.session.user = { email };
+
+    res.send({ status: "success", message: "Login success!" });
+  } catch (error) {
+    res.status(401).send({ status: "error", error: error.message });
   }
-
-  req.session.user = { email };
-
-  res.send({ message: "Login success!" });
 };
 
 export const logout = async (req, res) => {
