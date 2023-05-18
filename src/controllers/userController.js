@@ -43,7 +43,7 @@ export const save = async (req, res) => {
       ...req.body,
       password: await bcrypt.hash(req.body.password, 10),
     };
-
+		
     // Le paso el usuario a la base de datos con la contraseña hasheada
     const user = await manager.create(payload);
 
