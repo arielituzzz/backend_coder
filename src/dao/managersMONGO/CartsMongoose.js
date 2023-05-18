@@ -18,7 +18,8 @@ class CartsMongoose
 	async getOne(id)
 	{
 		const cartDocument = await cartSchema
-			.findOne({ _id: id });
+			.findOne({ _id: id })
+		.populate(["products._id"]);
 
 		if(!cartDocument)
 		{
