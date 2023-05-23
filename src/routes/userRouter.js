@@ -1,6 +1,6 @@
 import { Router } from "express";
-import authAdmin from "./middelwares/roles/authAdmin.js";
-import authUser from "./middelwares/roles/authUser.js";
+import authAdmin from "../middelwares/roles/authAdmin.js";
+import authUser from "../middelwares/roles/authUser.js";
 import {
   list,
   deleteOne,
