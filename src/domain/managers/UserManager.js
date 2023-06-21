@@ -30,6 +30,13 @@ class UserManager {
   async deleteOne(id) {
     return this.userDao.deleteOne(id);
   }
+
+  async forgetPassword(dto) {
+    const user = await this.userDao.getOneByEmail(dto.email);
+    user.password = dto.password;
+
+    return this.userDao.updateOne(user.id, user);
+  }
 }
 
 export default UserManager;

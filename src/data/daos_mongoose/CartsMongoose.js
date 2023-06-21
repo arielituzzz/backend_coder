@@ -1,4 +1,4 @@
-import cartSchema from "./models/CartSchema.js";
+import cartSchema from "../models_mongoose/CartSchema.js";
 
 class CartsMongoose {
   async find() {

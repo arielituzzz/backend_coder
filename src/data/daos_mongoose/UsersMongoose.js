@@ -37,9 +37,9 @@ class UserMongoose {
   async getOneByEmail(email) {
     const userDocument = await userSchema.findOne({ email });
 
-    if (!userDocument) {
-      throw new Error("User dont exist.");
-    }
+    // if (!userDocument) {
+    //   throw new Error("User dont exist.");
+    // }
 
     return {
       id: userDocument?._id,
